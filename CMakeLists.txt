@@ -10,6 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   pcl_ros
   pcl_conversions
+  tf2
 )
 
 ### PCL
@@ -38,11 +39,15 @@ catkin_package(
 ###########
 
 add_executable(detector src/detector.cpp)
+add_executable(cluster src/cluster.cpp)
 
-set_target_properties(detector PROPERTIES OUTPUT_NAME detector PREFIX "")
+#set_target_properties(detector PROPERTIES OUTPUT_NAME detector PREFIX "")
 
 add_dependencies(detector ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(cluster ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+
 target_link_libraries(detector ${catkin_LIBRARIES})
+target_link_libraries(cluster ${catkin_LIBRARIES})
 
 #############
 ## Install ##

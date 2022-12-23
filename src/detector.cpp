@@ -19,7 +19,7 @@ ros::Publisher pub;
 
 void callback(const sensor_msgs::PointCloud2::ConstPtr& input)
 {
-    ROS_INFO("subscribed!");
+    //ROS_INFO("subscribed!");
 
     pcl::PCLPointCloud2 pcl_pc2;
     pcl_conversions::toPCL (*input, pcl_pc2);
@@ -29,8 +29,8 @@ void callback(const sensor_msgs::PointCloud2::ConstPtr& input)
     pcl::PointCloud<pcl::PointXYZ> res_pc;
     pcl::PointCloud<pcl::PointXYZ>::Ptr ptr_res_pc (new pcl::PointCloud<pcl::PointXYZ>);
 
-    res_pc.header.frame_id = "base_link";
-    ptr_res_pc->header.frame_id = "base_link";
+    // res_pc.header.frame_id = "base_link";
+    // ptr_res_pc->header.frame_id = "base_link";
 
     pcl::ModelCoefficients::Ptr coefficients (new pcl::ModelCoefficients ());
     coefficients->values.resize (4);
@@ -45,9 +45,10 @@ void callback(const sensor_msgs::PointCloud2::ConstPtr& input)
     proj.setModelCoefficients (coefficients);
     proj.filter(*ptr_res_pc);
 
-    // Convert to ROS data type
+    // // Convert to ROS data type
     sensor_msgs::PointCloud2 output;
     pcl::toROSMsg(*ptr_res_pc, output);
+
 
     pub.publish(output);
 }
