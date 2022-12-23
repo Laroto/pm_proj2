@@ -49,7 +49,7 @@ void callback(const sensor_msgs::PointCloud2::ConstPtr& input)
   pcl::VoxelGrid<pcl::PointXYZ> vg;
   pcl::PointCloud<pcl::PointXYZ>::Ptr cloud_filtered (new pcl::PointCloud<pcl::PointXYZ>);
   vg.setInputCloud (temp_cloud);
-  vg.setLeafSize (0.5f, 0.5f, 0.5f);
+  vg.setLeafSize (0.25f, 0.25f, 0.25f);
   vg.filter (*cloud_filtered);
   std::cout << "PointCloud after filtering has: " << cloud_filtered->size ()  << " data points." << std::endl; //*
 
@@ -60,7 +60,7 @@ void callback(const sensor_msgs::PointCloud2::ConstPtr& input)
 
   std::vector<pcl::PointIndices> cluster_indices;
   pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-  ec.setClusterTolerance (3); // 2m
+  ec.setClusterTolerance (1); // 2m
   ec.setMinClusterSize (100);
   ec.setMaxClusterSize (25000);
   ec.setSearchMethod (tree);
@@ -107,6 +107,7 @@ void callback(const sensor_msgs::PointCloud2::ConstPtr& input)
   //pcl::PointCloud<pcl::PointXYZ>::Ptr ptr_res_pc (new pcl::PointCloud<pcl::PointXYZ>);
   pcl::PointCloud<pcl::PointXYZ>::Ptr ptr_res_pc ;
   ptr_res_pc = res_pc.makeShared();
+  ptr_res_pc->header.frame_id = "os_sensor";
   //std::cout << ptr_res_pc->points[0] << std::endl;
   pcl::toROSMsg(*ptr_res_pc, output);
   pub.publish(output);   
