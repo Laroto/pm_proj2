@@ -60,7 +60,7 @@ void callback(const sensor_msgs::PointCloud2::ConstPtr& input)
 
   std::vector<pcl::PointIndices> cluster_indices;
   pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-  ec.setClusterTolerance (2); // 2m
+  ec.setClusterTolerance (3); // 2m
   ec.setMinClusterSize (100);
   ec.setMaxClusterSize (25000);
   ec.setSearchMethod (tree);
@@ -104,7 +104,10 @@ void callback(const sensor_msgs::PointCloud2::ConstPtr& input)
   // Convert to ROS data type
 
   sensor_msgs::PointCloud2 output;
-  pcl::PointCloud<pcl::PointXYZ>::Ptr ptr_res_pc (&res_pc);
+  //pcl::PointCloud<pcl::PointXYZ>::Ptr ptr_res_pc (new pcl::PointCloud<pcl::PointXYZ>);
+  pcl::PointCloud<pcl::PointXYZ>::Ptr ptr_res_pc ;
+  ptr_res_pc = res_pc.makeShared();
+  //std::cout << ptr_res_pc->points[0] << std::endl;
   pcl::toROSMsg(*ptr_res_pc, output);
   pub.publish(output);   
 }
