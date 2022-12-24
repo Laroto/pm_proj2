@@ -59,7 +59,7 @@ int main(int argc, char **argv)
 
     ros::NodeHandle n;
 
-    ros::Subscriber sub = n.subscribe("/os_cloud_node/points", 1, callback);
+    ros::Subscriber sub = n.subscribe("/os_cloud_node/stable_cloud", 1, callback);
      
     pub = n.advertise<sensor_msgs::PointCloud2>("/2d_cloud",1);
 

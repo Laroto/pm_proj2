@@ -130,6 +130,8 @@ catkin_package(
 add_executable(bbox src/bbox.cpp)
 add_executable(detector src/detector.cpp)
 add_executable(cluster src/cluster.cpp)
+add_executable(risk_assessor src/risk_assessor.cpp)
+add_executable(estabilizador_lidar src/estabilizador_lidar.cpp)
 
 
 ## Rename C++ executable without prefix
@@ -143,6 +145,8 @@ add_executable(cluster src/cluster.cpp)
 add_dependencies(bbox ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(detector ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(cluster ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(risk_assessor ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(estabilizador_lidar ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
 target_link_libraries(bbox
@@ -154,6 +158,14 @@ target_link_libraries(detector
 )
 
 target_link_libraries(cluster
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(risk_assessor
+  ${catkin_LIBRARIES}
+)
+
+target_link_libraries(estabilizador_lidar
   ${catkin_LIBRARIES}
 )
 
