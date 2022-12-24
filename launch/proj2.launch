@@ -1,0 +1,16 @@
+<launch>
+
+    <!-- argumentos -->
+    <!-- <arg name="debug" default="False"/> -->
+
+    <!-- Nodes -->
+    <!-- <node pkg="pm_proj2" name="detector" type="segment" output="screen"/> -->
+    <node pkg="proj2" name="cluster" type="cluster" output="screen" />
+    <node pkg="proj2" name="bbox" type="bbox" output="screen" />
+    <node pkg="rosbag" name="play" type="play" args="$(find proj2)/bags/asv_trajectory.bag -l"/>
+    <node type="rviz" name="rviz" pkg="rviz" args="-d $(find proj2)/rviz/cfg.rviz" />
+    <!-- Parametros -->
+    <!-- <param name="/debug" value="$(arg debug)"/> -->
+
+    
+</launch>   
