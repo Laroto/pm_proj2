@@ -60,7 +60,7 @@ void callback(const sensor_msgs::PointCloud2::ConstPtr& input)
 
   std::vector<pcl::PointIndices> cluster_indices;
   pcl::EuclideanClusterExtraction<pcl::PointXYZ> ec;
-  ec.setClusterTolerance (1); // 2m
+  ec.setClusterTolerance (2); // 2m
   ec.setMinClusterSize (100);
   ec.setMaxClusterSize (25000);
   ec.setSearchMethod (tree);
@@ -122,7 +122,7 @@ int main(int argc, char **argv)
     //ros::Subscriber sub = n.subscribe("/os_cloud_node/points", 1, callback);
     ros::Subscriber sub = n.subscribe("/os_cloud_node/points", 1, callback);
      
-    pub = n.advertise<sensor_msgs::PointCloud2>("/clustered_cloud",1);
+    pub = n.advertise<sensor_msgs::PointCloud2>("/detector/obstacle",1);
 
     while (ros::ok())
     {

@@ -40,14 +40,17 @@ catkin_package(
 
 add_executable(detector src/detector.cpp)
 add_executable(cluster src/cluster.cpp)
+add_executable(bbox src/bbox.cpp)
 
 #set_target_properties(detector PROPERTIES OUTPUT_NAME detector PREFIX "")
 
 add_dependencies(detector ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(cluster ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(bbox ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 target_link_libraries(detector ${catkin_LIBRARIES})
 target_link_libraries(cluster ${catkin_LIBRARIES})
+target_link_libraries(bbox ${catkin_LIBRARIES})
 
 #############
 ## Install ##
