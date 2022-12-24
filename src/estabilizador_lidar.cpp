@@ -13,52 +13,73 @@
 #include <pcl/conversions.h>
 #include <pcl_ros/transforms.h>
 
-ros::Subscriber sub;
 ros::Publisher pub;
 
-void callback (const sensor_msgs::ImuConstPtr& imu, const sensor_msgs::PointCloud2ConstPtr& ptc)
-{
-    pcl::PCLPointCloud2 pcl_pc2;
-    pcl_conversions::toPCL (*ptc, pcl_pc2);
-    pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud (new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::fromPCLPointCloud2(pcl_pc2, *temp_cloud);
+tf2::Quaternion q;
+pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud (new pcl::PointCloud<pcl::PointXYZ>);
+bool new_ptc = false;
 
-    tf2::Quaternion q;
+void callback_imu (const sensor_msgs::ImuConstPtr& imu)
+{
+    
     q.setX (imu->orientation.x);
     q.setY (imu->orientation.y);
     q.setZ (imu->orientation.z);
     q.setW (imu->orientation.w);
     q = q.inverse();
+}
 
+void callback_pointcloud (const sensor_msgs::PointCloud2ConstPtr& ptc)
+{
+    // ROS_WARN("subscribed");
 
-    Eigen::Matrix3f mat3 = Eigen::Quaternionf(q.getW(), q.getX(), q.getY(), q.getZ()).toRotationMatrix();
-    Eigen::Matrix4f mat4 = Eigen::Matrix4f::Identity();
-    mat4.block(0,0,3,3) = mat3;
+    pcl::PCLPointCloud2 pcl_pc2;
+    pcl_conversions::toPCL (*ptc, pcl_pc2);
+    //pcl::PointCloud<pcl::PointXYZ>::Ptr temp_cloud (new pcl::PointCloud<pcl::PointXYZ>);
+    pcl::fromPCLPointCloud2(pcl_pc2, *temp_cloud);
 
-    pcl::PointCloud<pcl::PointXYZ> res_pc;
-    pcl::PointCloud<pcl::PointXYZ>::Ptr ptr_res_pc (new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::transformPointCloud(*temp_cloud, *ptr_res_pc, mat4);
-
-    ptr_res_pc->header.frame_id = "os_sensor";
-
-    sensor_msgs::PointCloud2 msg;
-    pcl::toROSMsg(*ptr_res_pc,msg);
-    pub.publish(msg);
+    new_ptc = true;
 }
 
 int main(int argc, char** argv)
 {
     ros::init(argc, argv, "estabilizador");
     ros::NodeHandle nh;
-    ros::NodeHandle n;
 
-    pub = n.advertise<sensor_msgs::PointCloud2>("/estabilizador/stable_cloud", 1);
+    ros::Subscriber sub_imu, sub_points;
 
-    message_filters::Subscriber<sensor_msgs::Imu> imu_sub (nh, "/imu_nav/data", 1);
-    message_filters::Subscriber<sensor_msgs::PointCloud2> ptc_sub (nh, "/os_cloud_node/points", 1);
-    typedef message_filters::sync_policies::ApproximateTime <sensor_msgs::Imu, sensor_msgs::PointCloud2> myPolicy ;
-    message_filters::Synchronizer <myPolicy> sync (myPolicy(10), imu_sub, ptc_sub);
-    sync.registerCallback(&callback);
+    sub_imu = nh.subscribe("/imu_nav/data", 1, callback_imu);
+    sub_points = nh.subscribe("/os_cloud_node/points", 1, callback_pointcloud);
+
+    pub = nh.advertise<sensor_msgs::PointCloud2>("/estabilizador/stable_cloud", 1);
+
+    ros::Rate rate(50);
+
+    while(ros::ok())
+    {
+        if (new_ptc == true)
+        {
+            Eigen::Matrix3f mat3 = Eigen::Quaternionf(q.getW(), q.getX(), q.getY(), q.getZ()).toRotationMatrix();
+            Eigen::Matrix4f mat4 = Eigen::Matrix4f::Identity();
+            mat4.block(0,0,3,3) = mat3;
+
+            pcl::PointCloud<pcl::PointXYZ> res_pc;
+            pcl::PointCloud<pcl::PointXYZ>::Ptr ptr_res_pc (new pcl::PointCloud<pcl::PointXYZ>);
+            pcl::transformPointCloud(*temp_cloud, *ptr_res_pc, mat4);
+
+            ptr_res_pc->header.frame_id = "os_sensor";
+
+            sensor_msgs::PointCloud2 msg;
+            pcl::toROSMsg(*ptr_res_pc,msg);
+            pub.publish(msg);
+
+            new_ptc = false;
+        }
+        
+
+        ros::spinOnce();
+    }
     
-    ros::spin();
+    
+    
 }

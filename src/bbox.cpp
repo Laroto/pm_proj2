@@ -96,7 +96,7 @@ void callback(const sensor_msgs::PointCloud2::ConstPtr& input)
     p.x = max_x;
     p.y = min_y;
     p.z = max_z;
-    marker_msg.points.push_back(p); //
+    marker_msg.points.push_back(p); //5
     p.y = max_y;
     marker_msg.points.push_back(p);
    
