@@ -51,7 +51,7 @@ void callback(const sensor_msgs::PointCloud2::ConstPtr& input)
   vg.setInputCloud (temp_cloud);
   vg.setLeafSize (0.25f, 0.25f, 0.25f);
   vg.filter (*cloud_filtered);
-  std::cout << "PointCloud after filtering has: " << cloud_filtered->size ()  << " data points." << std::endl; //*
+  //std::cout << "PointCloud after filtering has: " << cloud_filtered->size ()  << " data points." << std::endl; //*
 
 
   // Creating the KdTree object for the search method of the extraction
@@ -92,10 +92,10 @@ void callback(const sensor_msgs::PointCloud2::ConstPtr& input)
       res_pc = *cloud_cluster;
     }
 
-    std::cout << "PointCloud representing the Cluster: " << cloud_cluster->size () << " data points." << std::endl;
-    std::cout << "Distance to centroid is " << dist << std::endl;
-    std::stringstream ss;
-    ss << "~/Desktop/" << "cloud_cluster_" << j << ".pcd";
+    //std::cout << "PointCloud representing the Cluster: " << cloud_cluster->size () << " data points." << std::endl;
+    //std::cout << "Distance to centroid is " << dist << std::endl;
+    //std::stringstream ss;
+    //ss << "~/Desktop/" << "cloud_cluster_" << j << ".pcd";
     //writer.write<pcl::PointXYZ> (ss.str (), *cloud_cluster, false); 
     j++;
   }
