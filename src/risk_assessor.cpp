@@ -61,34 +61,34 @@ bool distancia(double ponto1_x,double ponto1_y,double ponto2_x,double ponto2_y,d
     double temp, temp2;
     dist = -1;
 
-    ROS_WARN("pontosX: %f %f pontosY: %f %f",ponto1_x,ponto2_x, ponto1_y, ponto2_y);
+    //ROS_WARN("pontosX: %f %f pontosY: %f %f",ponto1_x,ponto2_x, ponto1_y, ponto2_y);
     
     if (abs(ponto1_x) - abs(ponto2_x) < 0.0001)
     {
-        std::cout << "entrou";
+        //std::cout << "entrou";
         temp=ponto1_x/velocidade_x;
         temp2=velocidade_y*temp;
         if ((ponto1_y<temp2 && temp2<ponto2_y)||(ponto1_y>temp2 && temp2>ponto2_y))
         {
             dist = sqrt(pow(ponto1_x,2)+pow(temp2,2));
-            std::cout<< dist<<"\n";
+            //std::cout<< dist<<"\n";
         }
         return true;
     }
     
     if (abs(ponto1_y) - abs(ponto2_y) < 0.0001)
     {
-        std::cout << "entrou";
+        //std::cout << "entrou";
         temp=ponto1_y/velocidade_y;
         temp2=velocidade_x*temp;
         if ((ponto1_x<temp2 && temp2<ponto2_x)||(ponto1_x>temp2 && temp2>ponto2_x))
         {
             dist = sqrt(pow(ponto1_x,2)+pow(temp2,2));
-            std::cout<< dist <<"\n";
+            //std::cout<< dist <<"\n";
         }
         return true;
     }
-    //std::cout << dist ;
+    std::cout << dist ;
     return false;
 } //retorna true se vai bater e false se não bate
 
@@ -137,10 +137,10 @@ void callback_markers(const visualization_msgs::Marker::ConstPtr& input)
                     input->points[i*2].y,
                     input->points[i*2+1].x,
                     input->points[i*2+1].y,
-                    odom.linear.x,
-                    odom.linear.y) )
+                    vx_rob,
+                    vy_rob) )
             vai_bater = true;
-        if (dist < min_dist)
+        if ((dist < min_dist) && (dist > 0))
             min_dist = dist;
     }
 
