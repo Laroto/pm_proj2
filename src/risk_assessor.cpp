@@ -68,11 +68,13 @@ bool distancia(double ponto1_x,double ponto1_y,double ponto2_x,double ponto2_y,d
     {
         //std::cout << "entrou";
         temp=ponto1_x/velocidade_x;
+        if (temp<0)
+          return false;
         temp2=velocidade_y*temp;
         if ((ponto1_y<temp2 && temp2<ponto2_y)||(ponto1_y>temp2 && temp2>ponto2_y))
         {
             dist = sqrt(pow(ponto1_x,2)+pow(temp2,2));
-            //std::cout<< dist<<"\n";
+            std::cout<< "dist_x"<<dist<<"\n";
         }
         return true;
     }
@@ -81,15 +83,17 @@ bool distancia(double ponto1_x,double ponto1_y,double ponto2_x,double ponto2_y,d
     {
         //std::cout << "entrou";
         temp=ponto1_y/velocidade_y;
+        if (temp<0)
+          return false;
         temp2=velocidade_x*temp;
         if ((ponto1_x<temp2 && temp2<ponto2_x)||(ponto1_x>temp2 && temp2>ponto2_x))
         {
             dist = sqrt(pow(ponto1_x,2)+pow(temp2,2));
-            //std::cout<< dist <<"\n";
+            std::cout<< "dist_x"<<dist <<"\n";
         }
         return true;
     }
-    std::cout << dist ;
+//    std::cout << dist ;
     return false;
 } //retorna true se vai bater e false se não bate
 
@@ -131,7 +135,7 @@ void callback_markers(const visualization_msgs::Marker::ConstPtr& input)
     }
 
     bool vai_bater = false;
-
+    min_dist = INFINITY;
     for (int i=0; i<12; i++)
     {
         if ( distancia(input->points[i*2].x,
@@ -152,7 +156,7 @@ void callback_markers(const visualization_msgs::Marker::ConstPtr& input)
     else
         ttc = -1;
 
-    std::cout << "vai bater em: " << - ttc << " segundos" << std::endl; 
+    std::cout << "vai bater em: " << ttc << " segundos" << std::endl;
 }
 
 void callback_imu(const sensor_msgs::Imu::ConstPtr& msg)
