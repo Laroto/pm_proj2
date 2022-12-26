@@ -47,73 +47,13 @@ double dist;
 double min_dist = INFINITY;
 double ttc;
 bool debug_mode;
+double roll, pitch, yaw;
+double vx_rob, vy_rob;
 
 void callback_odom (const nav_msgs::OdometryConstPtr& input)
 {
     odom = input->twist.twist;
     odom.linear.z = 0;
-
-    if (debug_mode)
-    {
-        visualization_msgs::Marker out_msg;
-
-        out_msg.color.a = 1.0;
-        out_msg.color.b = 1.0f;
-
-        out_msg.type = out_msg.LINE_LIST;
-
-        geometry_msgs::Point p1,p2;
-
-        int k = 100;
-
-        p1.x = 0;
-        p1.y = 0;
-        p1.z = 0;
-
-        p2.x = k * odom.linear.x;
-        p2.y = k * odom.linear.y;
-        p2.z = 0;
-
-        out_msg.points.push_back(p1);
-        out_msg.points.push_back(p2);
-
-        out_msg.scale.x = 0.1;
-        out_msg.scale.y = 0.1;
-        out_msg.header.frame_id = "os_sensor";
-
-        debug_pub.publish(out_msg);
-    }
-
-    if (debug_mode)
-    {
-        visualization_msgs::Marker out_msg;
-
-        out_msg.color.a = 1.0;
-        out_msg.color.b = 1.0f;
-
-        out_msg.type = out_msg.LINE_LIST;
-
-        geometry_msgs::Point p1,p2;
-
-        p1.x = 0;
-        p1.y = 0;
-        p1.z = 0;
-        out_msg.points.push_back(p1);
-
-        p2.x = odom.linear.x;
-        p2.y = odom.linear.y;
-        p2.z = 0;
-        out_msg.points.push_back(p2);
-
-        for (int i;i<10;i++)
-        {
-            p1 = p2;
-            out_msg.points.push_back(p1);
-
-            p2.x = p2.x
-            
-        }
-    }
 }
 
 bool distancia(double ponto1_x,double ponto1_y,double ponto2_x,double ponto2_y,double velocidade_x,double velocidade_y)
@@ -155,6 +95,40 @@ bool distancia(double ponto1_x,double ponto1_y,double ponto2_x,double ponto2_y,d
 
 void callback_markers(const visualization_msgs::Marker::ConstPtr& input)
 {
+    vx_rob = - ( odom.linear.x * cos(yaw) - odom.linear.y * sin(yaw) );
+    vy_rob = - ( odom.linear.x * sin(yaw) + odom.linear.y * cos(yaw) );
+
+    if (debug_mode)
+    {
+        visualization_msgs::Marker out_msg;
+
+        out_msg.color.a = 1.0;
+        out_msg.color.b = 1.0f;
+
+        out_msg.type = out_msg.LINE_LIST;
+
+        geometry_msgs::Point p1,p2;
+
+        int k = 25;
+
+        p1.x = 0;
+        p1.y = 0;
+        p1.z = 0;
+
+        p2.x = k * vx_rob;
+        p2.y = k * vy_rob;
+        p2.z = 0;
+
+        out_msg.points.push_back(p1);
+        out_msg.points.push_back(p2);
+
+        out_msg.scale.x = 0.1;
+        out_msg.scale.y = 0.1;
+        out_msg.header.frame_id = "os_sensor";
+
+        debug_pub.publish(out_msg);
+    }
+
     bool vai_bater = false;
 
     for (int i=0; i<12; i++)
@@ -180,9 +154,19 @@ void callback_markers(const visualization_msgs::Marker::ConstPtr& input)
     std::cout << "vai bater em: " << - ttc << " segundos" << std::endl; 
 }
 
-void callback_imu(const sensor_msgs::Imu::ConstPtr& input)
+void callback_imu(const sensor_msgs::Imu::ConstPtr& msg)
 {
-    
+    tf::Quaternion q(
+        msg->orientation.x,
+        msg->orientation.y,
+        msg->orientation.z,
+        msg->orientation.w);
+
+   // q = q.inverse();
+
+    tf::Matrix3x3 m(q);
+
+    m.getRPY(roll, pitch, yaw);
 }
 
 int main(int argc, char **argv)
