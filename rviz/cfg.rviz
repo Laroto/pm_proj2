@@ -5,8 +5,7 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
-        - /Status1
-      Splitter Ratio: 0.5
+      Splitter Ratio: 0.7088235020637512
     Tree Height: 549
   - Class: rviz/Selection
     Name: Selection
@@ -25,7 +24,7 @@ Panels:
   - Class: rviz/Time
     Name: Time
     SyncMode: 0
-    SyncSource: PointCloud2
+    SyncSource: original PointCloud
 Preferences:
   PromptSaveOnExit: true
 Toolbars:
@@ -54,7 +53,7 @@ Visualization Manager:
     - Class: rviz/Marker
       Enabled: true
       Marker Topic: /detector/bbox
-      Name: Marker
+      Name: bbox
       Namespaces:
         "": true
       Queue Size: 100
@@ -75,7 +74,7 @@ Visualization Manager:
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Min Color: 0; 0; 0
-      Name: PointCloud2
+      Name: original PointCloud
       Position Transformer: XYZ
       Queue Size: 10
       Selectable: true
@@ -103,7 +102,7 @@ Visualization Manager:
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Min Color: 0; 0; 0
-      Name: PointCloud2
+      Name: obstacle pointcloud
       Position Transformer: XYZ
       Queue Size: 10
       Selectable: true
@@ -118,7 +117,15 @@ Visualization Manager:
     - Class: rviz/Marker
       Enabled: true
       Marker Topic: /risk_assessor/debug
-      Name: Marker
+      Name: debug vel vector
+      Namespaces:
+        "": true
+      Queue Size: 100
+      Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /risk_assessor/ttc_marker
+      Name: ttc text
       Namespaces:
         "": true
       Queue Size: 100
@@ -151,7 +158,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 37.41009521484375
+      Distance: 29.535715103149414
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -159,17 +166,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 0
-        Y: 0
-        Z: 0
+        X: 0.9257162809371948
+        Y: 0.09238701313734055
+        Z: 2.765613079071045
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.7953983545303345
+      Pitch: 0.6353984475135803
       Target Frame: <Fixed Frame>
-      Yaw: 3.070406675338745
+      Yaw: 3.53541898727417
     Saved: ~
 Window Geometry:
   Displays:

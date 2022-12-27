@@ -2,6 +2,7 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <nav_msgs/Odometry.h>
 #include <sensor_msgs/Imu.h>
+#include <std_msgs/Float32.h>
 
 #include <ctime>
 #include <vector>
@@ -41,7 +42,7 @@
 
 #include <tf/transform_listener.h>
 
-ros::Publisher pub, debug_pub;
+ros::Publisher pub, debug_pub, pub_ttc;
 geometry_msgs::Twist odom;
 double dist;
 double min_dist = INFINITY;
@@ -49,6 +50,11 @@ double ttc;
 bool debug_mode;
 double roll, pitch, yaw;
 double vx_rob, vy_rob;
+
+bool inRange(int low, int high, int x)
+{
+    return ((x-high)*(x-low) <= 0);
+}
 
 void callback_odom (const nav_msgs::OdometryConstPtr& input)
 {
@@ -96,7 +102,6 @@ bool distancia(double ponto1_x,double ponto1_y,double ponto2_x,double ponto2_y,d
     return false;
 } //retorna true se vai bater e false se não bate
 
-
 void callback_markers(const visualization_msgs::Marker::ConstPtr& input)
 {
     vx_rob = - ( odom.linear.x * cos(yaw) - odom.linear.y * sin(yaw) );
@@ -134,7 +139,7 @@ void callback_markers(const visualization_msgs::Marker::ConstPtr& input)
     }
 
     bool vai_bater = false;
-    min_dist = INFINITY;
+    min_dist = 9999; // INFINITY não tava a funcinar nas condições
     for (int i=0; i<12; i++)
     {
         if ( distancia(input->points[i*2].x,
@@ -148,14 +153,55 @@ void callback_markers(const visualization_msgs::Marker::ConstPtr& input)
             min_dist = dist;
     }
 
-    ROS_WARN("%f", min_dist);
+    //ROS_WARN("%f", min_dist);
 
-    if (vai_bater)
-        ttc = min_dist / sqrt(pow(odom.linear.x,2)+pow(odom.linear.y,2));    
+    visualization_msgs::Marker ttc_marker;
+    ttc_marker.header.frame_id = "os_sensor";
+    geometry_msgs::Point Pt = input->points[7];
+    Pt.z += 1; // 1m acima do canto superior direito mais afastado da bbox
+    ttc_marker.pose.position.x = Pt.x;
+    ttc_marker.pose.position.y = Pt.y;
+    ttc_marker.pose.position.z = Pt.z; 
+    ttc_marker.pose.orientation.x = 0;
+    ttc_marker.pose.orientation.y = 0;
+    ttc_marker.pose.orientation.z = 0; 
+    ttc_marker.pose.orientation.w = 1; 
+    ttc_marker.type = ttc_marker.TEXT_VIEW_FACING;
+    ttc_marker.color.a = 1.0;
+    ttc_marker.color.g = 1.0f;
+    ttc_marker.scale.z = 1.0;
+
+    std::string str;
+
+    if (min_dist < 1000)
+    {
+        ttc = min_dist / (sqrt(pow(odom.linear.x,2)+pow(odom.linear.y,2))+1e-6); 
+        std::cout << "\n\nestá a " << min_dist << "m\n" << "vai bater em: " << ttc << " segundos" << std::endl;
+        str = "TTC = " + std::to_string(ttc) + " s";
+
+        if (inRange(8,10,ttc)) ttc_marker.scale.z = 1.5;
+        if (inRange(6,8,ttc)) ttc_marker.scale.z = 2.0;
+        if (inRange(3,6,ttc)) ttc_marker.scale.z = 2.5;
+        if (inRange(1,3,ttc)) ttc_marker.scale.z = 3.0;
+        if (inRange(0,1,ttc)) {ttc_marker.scale.z = 4.0;}
+    }   
     else
+    {
         ttc = -1;
+        ttc_marker.scale.z = 1.0;
+        std::cout << "\n\nestá fora de rota de colisão" << std::endl;
+        str = "TTC = INF";
+        //str = " ";
+    }
 
-    std::cout << "vai bater em: " << ttc << " segundos" << std::endl;
+    ttc_marker.text = str;
+
+    pub.publish(ttc_marker);
+
+    std_msgs::Float32 ttc_float_msg;
+    ttc_float_msg.data = ttc;
+    pub_ttc.publish(ttc_float_msg);
+    
 }
 
 void callback_imu(const sensor_msgs::Imu::ConstPtr& msg)
@@ -183,7 +229,8 @@ int main(int argc, char **argv)
     ros::Subscriber sub_markers = n.subscribe("/detector/bbox", 1, callback_markers);
     ros::Subscriber sub_imu = n.subscribe("/imu_nav/data", 1, callback_imu);
      
-    pub = n.advertise<sensor_msgs::PointCloud2>("/detector/obstacle",1);
+    pub = n.advertise<visualization_msgs::Marker>("/risk_assessor/ttc_marker",1);
+    pub_ttc = n.advertise<std_msgs::Float32>("/risk_assessor/time_to_collision",1);
 
     n.param<bool>("/debug", debug_mode, "False");
 
@@ -201,8 +248,6 @@ int main(int argc, char **argv)
     {  
         ros::spinOnce(); 
         rate.sleep();
-
-        
     }
 
     return 0;
