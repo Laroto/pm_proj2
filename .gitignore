@@ -53,3 +53,7 @@ CATKIN_IGNORE
 # Bags too large
 Bags/
 bags/
+
+# cenas de workspace
+/src/PM2.workspace
+PM2.workspace
