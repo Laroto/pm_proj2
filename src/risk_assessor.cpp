@@ -40,7 +40,6 @@
 #include <geometry_msgs/Point.h>
 
 #include <tf/transform_listener.h>
-//help me
 
 ros::Publisher pub, debug_pub;
 geometry_msgs::Twist odom;
@@ -74,7 +73,7 @@ bool distancia(double ponto1_x,double ponto1_y,double ponto2_x,double ponto2_y,d
         if ((ponto1_y<temp2 && temp2<ponto2_y)||(ponto1_y>temp2 && temp2>ponto2_y))
         {
             dist = sqrt(pow(ponto1_x,2)+pow(temp2,2));
-            std::cout<< "dist_x"<<dist<<"\n";
+            //std::cout<< "dist_x"<<dist<<"\n";
         }
         return true;
     }
@@ -89,7 +88,7 @@ bool distancia(double ponto1_x,double ponto1_y,double ponto2_x,double ponto2_y,d
         if ((ponto1_x<temp2 && temp2<ponto2_x)||(ponto1_x>temp2 && temp2>ponto2_x))
         {
             dist = sqrt(pow(ponto1_x,2)+pow(temp2,2));
-            std::cout<< "dist_x"<<dist <<"\n";
+            //std::cout<< "dist_x"<<dist <<"\n";
         }
         return true;
     }
