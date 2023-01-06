@@ -2,6 +2,8 @@
 #include <sensor_msgs/PointCloud2.h>
 #include <ctime>
 #include <vector>
+#include <std_msgs/Int32.h>
+
 
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
@@ -30,6 +32,9 @@
 #include <pcl/common/distances.h>
 
 ros::Publisher pub;
+ros::Publisher pub_center_x;
+ros::Publisher pub_center_y;
+ros::Publisher pub_center;
 
 void callback(const sensor_msgs::PointCloud2::ConstPtr& input)
 {
@@ -111,6 +116,24 @@ void callback(const sensor_msgs::PointCloud2::ConstPtr& input)
   //std::cout << ptr_res_pc->points[0] << std::endl;
   pcl::toROSMsg(*ptr_res_pc, output);
   pub.publish(output);   
+
+  std_msgs::Int32 msg;
+  msg.data =center.x;
+  pub_center_x.publish(msg);
+  msg.data =center.y;
+  pub_center_y.publish(msg);
+
+//  std:cout center.x<<" "<<center.y<<std::endl<<std::endl;
+//  std::string centroid_file = ros::package::getPath("PM2")+"/config/centroids.txt";
+
+//  FILE* file =fopen(centroid_file.c_str(),"a");
+//  if (file==NULL)
+//  {
+//    ROS_ERROR("FILE ERROR, SAVE CENTRO")
+//    return;
+//  }
+//  fprint(file,"%f %f %f\n",center.x,center.y,msg->header.stamp.toSec());
+//  fclose(file);
 }
 
 int main(int argc, char **argv)
@@ -123,6 +146,9 @@ int main(int argc, char **argv)
     ros::Subscriber sub = n.subscribe("/os_cloud_node/points", 1, callback);
      
     pub = n.advertise<sensor_msgs::PointCloud2>("/detector/obstacle",1);
+    pub_center_x = n.advertise<std_msgs::Int32>("/detector/centerx",1);
+    pub_center_y = n.advertise<std_msgs::Int32>("/detector/centery",1);
+
 
     while (ros::ok())
     {
